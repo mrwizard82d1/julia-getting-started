@@ -120,3 +120,158 @@ div(typemin(Int64), -1)
 # argument is zero.
 rem(1, 0)
 mod(1, 0)
+
+# Floating-point numbers
+
+# Literal floating-point numbers are represented using the "standard" formats using e-notation when necessary:
+1.0
+typeof(1.0)
+
+1.
+typeof(1.)
+
+0.5
+typeof(0.5)
+
+.5
+typeof(.5)
+
+-1.23
+typeof(-1.23)
+
+1e10
+typeof(1e10)
+
+2.5e-4
+typeof(2.5e-4)
+
+# The previous values are all of type `Float64`. Literal `Float32` values can be entered by writing an `f` in place
+# of the `e`
+x = 0.5f0
+typeof(x)
+
+x = 2.5f-4
+typeof(x)
+
+# One **cannot** simply use the `f` suffix
+x = 0.5f
+
+# One can easily convert values to `Float32` values
+x = Float32(-1.5)
+typeof(x)
+
+# Hexadecimal floating-point literals are also valid, but only as `Float64` values, with `p` preceding the base-2 
+# exponent. One must understand how `Float64` values are stored using the IEEE standard. See 
+# [the Wikipedia article](https://en.wikipedia.org/wiki/Floating-point_arithmetic)
+0x1p0
+
+0x1.8p3
+
+x = 0x.4p-1
+typeof(x)
+
+# Julia also supports half-precision floating-point numbers (`Float16`); however, they are implemented in software
+# and use `Float32` for calculations
+sizeof(Float16(4.))
+
+2 * Float16(4.)
+
+# Floating-point zero
+
+# Floating-point numbers have **two** zeros: positive zero and negative zero. They are equal to each other, but 
+# actually have different binary representations. The different representations can be seen using the `bitstring`
+# function.
+
+0.0 == -0.0
+
+bitstring(0.0)
+
+bitstring(-0.0)
+
+# Special floating-point values
+Inf16  ## `Float16` infinity
+Inf32  ## `Float32` infinity
+Inf  ## `Float64` infinity
+
+-Inf16  ## `Float16` negative infinity
+-Inf32  ## `Float32` negative infinity
+-Inf  ## `Float64` negative infinity
+
+NaN16  ## `Float16` not a number
+NaN32  ## `Float32` not a number
+NaN  ## `Float64` not a number
+
+# Comparing these values may not be obvious. See the section, "Numeric Comparisons."
+
+# These special floating-point values, per the _IEEE-754 standard_, are the result of certain arithmetic 
+# operations.
+1 / Inf
+
+1 / 0
+
+-5 / 0
+
+0.000001 / 0
+
+0 / 0
+
+500 + Inf
+
+500 - Inf
+
+Inf + Inf
+
+Inf - Inf
+
+Inf * Inf
+
+Inf / Inf
+
+0 * Inf
+
+# The `typemin` and `typemax` functions also apply to floating-point types.
+(typemin(Float16), typemax(Float16))
+
+(typemin(Float32), typemax(Float32))
+
+(typemin(Float64), typemax(Float64))
+
+# Machine epsilon
+
+# Most real numbers **cannot** be represented with floating-point numbers. For many purposes, it is important to 
+# know the distance between two adjacent floating-point numbers. This distance is often known as the 
+# "machine epsilon."
+
+# Julia provides `eps`, which gives the distance between 1.0 and the next larger representable floating-point 
+# value.
+eps(Float32)  # Same as 2.0^-23 as a `Float32` value
+Float32(2.0)^-23
+eps(Float64)  # Same as 2.0^-52 as a `Float64` value
+Float64(2.0^-52)
+eps()  # Same as `eps(Float64)`
+
+# The `eps` function also accepts a floating point value. In this situation, the result of `eps()` is the distance
+# between the argument to `eps()` and the next (higher) representable floating-point number.
+eps(1.0)
+eps(1000.)
+eps(1e-27)
+eps(0.0)
+
+# Note that the distance between two adjacent floating-point values is **not** uniform throughout the 
+# floating-point range; instead, floating-point numbers are densest close to 0.0 and grow exponentially sparser as
+# one moves away from zero.
+
+# Julia also provides `nextfloat` and `prevfloat` functions that return the next largest or smallest
+x = 1.25f0
+nextfloat(x)
+prevfloat(x)
+bitstring(x)
+bitstring(nextfloat(x))
+bitstring(prevfloat(x))
+
+x = 1.25
+nextfloat(x)
+prevfloat(x)
+bitstring(x)
+bitstring(nextfloat(x))
+bitstring(prevfloat(x))
