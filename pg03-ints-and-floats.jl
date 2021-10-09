@@ -275,3 +275,32 @@ prevfloat(x)
 bitstring(x)
 bitstring(nextfloat(x))
 bitstring(prevfloat(x))
+
+# Arbitrary Precision Arithmetic
+ 
+# Julia wraps the _GNU Multiple Precision Arithmetic Library (GMP)_ and the _GNU MPFR Library_, respectively. The 
+# `BigInt` and `BigFloat` types are available in Julia for arbitrary precision integer and floating point numbers,
+# respectively.
+
+# Use constructors to create these types from either primitive numerical types. Additionally, one can use the 
+# _string literal_ `@big_str` or `parse` to construct instances from `AbstractString` values. Values of type 
+# `BigInt` can be constructed from integer literals when the exceed the bounds of `Int128`. 
+
+# Note that **no** unsigned arbitrary-precision integer types exist in _Base_; instead, `BigInt` is sufficient in 
+# most cases. Additionally, binary, octal and hexadecimal integer literals can be used (in addition to decimal 
+# literals).
+
+# Once created, arbitrary-precision integers and floating-point values participate in arithmetic with all other 
+# numeric types because of Julia's _type promotion and conversion mechansims_.
+
+BigInt(typemax(Int64)) + 1
+
+big"1234567890123456789012345678901234567890" + 1
+
+parse(BigInt, "123456789012345678901234567890") + 1
+
+string(big"2"^200, base=16)
+
+typeof(0x1000_0000_0000_0000_0000_0000_0000_0000)
+typeof(0x1000_0000_0000_0000_0000_0000_0000_0000_0)
+0x1000_0000_0000_0000_0000_0000_0000_0000_0 - 1 == typemax(UInt128)
