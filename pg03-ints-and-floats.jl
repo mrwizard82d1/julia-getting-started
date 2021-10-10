@@ -304,3 +304,90 @@ string(big"2"^200, base=16)
 typeof(0x1000_0000_0000_0000_0000_0000_0000_0000)
 typeof(0x1000_0000_0000_0000_0000_0000_0000_0000_0)
 0x1000_0000_0000_0000_0000_0000_0000_0000_0 - 1 == typemax(UInt128)
+
+0x0000_0000_0000_0000_0000_0000_0000_0000_0
+typeof(ans)
+
+big"1.23456789012345678901"
+
+parse(BigFloat, "1.23456789012345678901")
+
+BigFloat(2.0^66) / 3
+
+factorial(BigInt(40))
+
+# However, type promotion between the primitive types above and `BigInt` / `BigFloat` is **not** automatic and must
+# be explicity stated.
+
+x = typemin(Int64)
+x = x - 1
+typeof(x)
+
+y = BigInt(typemin(Int64))
+y = y - 1
+typeof(y)
+
+# The default precision (in number of bits of the significand) and rounding mode of `BigFloat` operations can be
+# changed globally by calling `setprecision` and `setrounding`, and all further calculations will take these 
+# changes into account. Alternatively, the precision or the rounding can be changed only within the execution of a
+# particular block of code using the same functions with a `do` block.
+
+setrounding(BigFloat, RoundUp) do
+    BigFloat(1) + parse(BigFloat, "0.1")
+end
+
+setrounding(BigFloat, RoundDown) do
+   BigFloat(1) + parse(BigFloat, "0.1") 
+end
+
+setprecision(40) do
+   BigFloat(1) + parse(BigFloat, "0.1") 
+end
+
+# Numeric Literal Coefficents
+
+# To make common numeric forulae and expressions clearer, Julia allows variables to be immediately preceded by a
+# numeric literal, implying multiplication. This makes writing polynomial expressions much clearer.
+
+x = 3
+2x^2 - 3x + 1
+1.5x^2 - .5x + 1
+
+# It also makes writing exponential functions more elegant
+
+2^2x
+
+# The precedence of numeric literal coefficents is slightly lower than that of unary operators such as negation.
+# So, -2x is parsed as (-2) * x and √2x is parsed as (√2) * x. However, numeric literal coefficients parse 
+# similarly to unary operators when combined with exponentiation. For example, 2^3x is parsed as 2 * (3x), and
+# 2x^3 is parsed as 2 * (x ^ 3).
+
+# Numeric literals also work as coefficients to parenthesized expressions.
+
+2(x - 1)^2 - 3(x - 1) + 1
+
+# **Note**
+# 
+# The precedence of numeric literal coefficients used for implicit multiplication is higher than other binary
+# operators such as multiplication (*) and division(/, \, and //). This means, for example, that 1 / 2im equals
+# -0.5im and 6 // 2(2 + 1) equals 1 // 1.
+
+# Additionally, parenthesized expressions can be used as coefficients to variables, implying multiplication of the 
+# expression by the variable:
+
+(x - 1)x
+
+# Neither juxtaposition of two parenthesized, nor placing a variable before a parenthesized expression, however,
+# can be used to imply multiplication.
+
+(x + 1)(x + 1)
+
+x(x + 1)
+
+# Instead, both expressions are interpreted as function application; that is, any expression that is **not** a
+# numeric literal, when immediately followed by a parenthetical, is interpreted as a function application to the
+# values in parentheses.
+
+# The above syntatic enhancements significantly reduce the visual noise incurred when writing common mathematical
+# formulae. Finally, note that **no** whitespace may come between a numeric literal coefficient and the identifier
+# or parenthisized expression which it multiplies.
